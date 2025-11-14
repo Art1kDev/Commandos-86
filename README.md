@@ -1,4 +1,4 @@
-![preview](preview.png)
+![preview](Preview.png)
 
 # Commandos-86
 
