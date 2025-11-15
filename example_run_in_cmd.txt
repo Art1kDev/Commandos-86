@@ -1,1 +1,0 @@
-"Disk:\Folder\qemu-system-x86_64.exe Disk:\Folder\Commandos-86.img
