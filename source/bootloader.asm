@@ -39,7 +39,7 @@ print:
     jmp print
 .d:
     ret
-msg db 'Loading COMMANDOS-86 v1.13...', 13, 10, 0
+msg db 'Loading COMMANDOS-86 v1.01...', 13, 10, 0
 err_msg db 'Disk error!', 13, 10, 0
 times 510-($-$$) db 0
 dw 0xAA55
