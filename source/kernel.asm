@@ -83,6 +83,9 @@ input_done:
     mov di, c_mkdir
     call strcmp_prefix
     jc do_mkdir
+    mov di, c_hworld
+    call strcmp
+    jc do_hworld
     mov di, c_shutdown
     call strcmp
     jc do_shutdown
@@ -233,6 +236,12 @@ do_shutdown:
     call print
     cli
     hlt
+
+do_hworld:
+    mov si, msg_c
+    call print
+    jmp main_loop
+
 skip_space:
     lodsb
     cmp al, ' '
@@ -403,7 +412,7 @@ prompt_str db 'C:>',0
 not_found db 'Not found command',13,10,0
 reboot_msg db 'Rebooting...',13,10,0
 shutdown_msg db 'System shutting down...',13,10,0
-help_msg db 'Available commands:',13,10,' help - show this message',13,10,' dir - list directory',13,10,' cls - clear screen',13,10,' ver - show version',13,10,' echo X - print text',13,10,' reboot - restart system',13,10,' mem - show memory size',13,10,' col X - change background color (0-4)',13,10,' mkdir X - create directory',13,10,' shutdown - halts the system',13,10,0
+help_msg db 'Available commands:',13,10,' help - show this message',13,10,' dir - list directory',13,10,' cls - clear screen',13,10,' ver - show version',13,10,' echo X - print text',13,10,' reboot - restart system',13,10,' mem - show memory size',13,10,' col X - change background color (0-4)',13,10,' mkdir X - create directory',13,10,' Hworld - runs the Hello World program',13,10,' shutdown - halts the system',13,10,0
 version_msg db 'COMMANDOS-86 v1.01 by Art1kDev',13,10,0
 dir_c db 'C:',13,10,0
 mem_msg_prefix db 'Base memory: ',0
@@ -414,6 +423,8 @@ col_err_msg db 'Error: color must be 0-4.',13,10,0
 mkdir_ok db 'Directory created.',13,10,0
 mkdir_err db 'Error: specify directory name (e.g., mkdir myfolder).',13,10,0
 mkdir_full db 'Error: directory list is full.',13,10,0
+
+c_hworld db 'Hworld',0
 c_help db 'help',0
 c_dir db 'dir',0
 c_cls db 'cls',0
@@ -429,3 +440,4 @@ cmd times 80 db 0
 dir_content_start:
 dir_content_end dw dir_content_start
     times 256 db 0
+msg_c db "Hello world!",13,10,0
