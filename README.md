@@ -29,3 +29,11 @@ reboot - restart system;
 date - show date;
 
 shutdown - power off system
+
+Hworld - hello world
+
+mem - check memory
+
+mkdir X - make new folder in directory
+
+col X - (0-5) change bg color
