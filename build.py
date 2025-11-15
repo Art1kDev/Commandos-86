@@ -27,35 +27,35 @@ class BuilderApp:
         master.title("Commandos-86 OS Builder")
         master.geometry("640x480")
         master.resizable(False, False)
-        
+
         BG_COLOR = "#2e2e2e"
         FG_COLOR = "#cccccc"
         ERROR_COLOR = "#ff5555"
         SUCCESS_COLOR = "#50fa7b"
-        
+
         master.config(bg=BG_COLOR)
-        
+
         self.output_path = tk.StringVar(value=os.path.join(SCRIPT_DIR, IMAGE_NAME_DEFAULT))
 
         main_frame = tk.Frame(master, bg=BG_COLOR)
         main_frame.pack(fill='both', expand=True, padx=10, pady=10)
-        
+
         controls_frame = tk.Frame(main_frame, bg=BG_COLOR)
         controls_frame.pack(fill='x', pady=(0, 5))
-        
+
         log_image_frame = tk.Frame(main_frame, bg=BG_COLOR)
         log_image_frame.pack(fill='both', expand=True)
-        
+
         tk.Label(controls_frame, text="Output Image:", width=12, anchor='w', fg=FG_COLOR, bg=BG_COLOR).pack(side=tk.LEFT)
         self.entry_path = tk.Entry(controls_frame, textvariable=self.output_path, width=50, bg="#3c3c3c", fg=FG_COLOR, insertbackground=FG_COLOR)
         self.entry_path.pack(side=tk.LEFT, fill='x', expand=True, padx=(0, 5))
-        
+
         self.browse_button = ttk.Button(controls_frame, text="Browse...", command=self.ask_output_path)
         self.browse_button.pack(side=tk.RIGHT)
 
         self.build_button = ttk.Button(main_frame, text="Start Build (Собрать)", command=self.start_build_thread, style='Accent.TButton')
         self.build_button.pack(fill='x', pady=(0, 5))
-        
+
         self.log_text = scrolledtext.ScrolledText(log_image_frame, height=15, state='disabled', font=('Consolas', 9), bg="#1e1e1e", fg=FG_COLOR, insertbackground=FG_COLOR)
         self.log_text.pack(side=tk.RIGHT, fill='both', expand=True)
 
@@ -74,7 +74,7 @@ class BuilderApp:
             style.map('Accent.TButton', background=[('active', '#33cc55')])
         except tk.TclError:
             pass
-        
+
         self.log_text.tag_config('error', foreground=ERROR_COLOR)
         self.log_text.tag_config('success', foreground=SUCCESS_COLOR)
         self.log_text.tag_config('normal', foreground=FG_COLOR)
@@ -86,7 +86,7 @@ class BuilderApp:
                 img = Image.open(full_path)
                 max_size = (150, 150)
                 img.thumbnail(max_size, Image.Resampling.LANCZOS)
-                
+
                 self.tk_img = ImageTk.PhotoImage(img)
                 self.image_label.config(image=self.tk_img)
                 self.tk_log(f"Image '{file_path}' loaded successfully.")
@@ -98,17 +98,17 @@ class BuilderApp:
 
     def tk_log(self, msg, is_error=False, is_success=False):
         tag = 'error' if is_error else ('success' if is_success else 'normal')
-        
+
         self.log_text.config(state='normal')
         self.log_text.insert(tk.END, msg + "\n", tag)
         self.log_text.see(tk.END)
         self.log_text.config(state='disabled')
         self.master.update()
 
-    
+
     def run_nasm(self, command, error_msg):
         self.tk_log("> " + " ".join(command))
-        
+
         try:
             r = subprocess.run(
                 command,
@@ -142,7 +142,7 @@ class BuilderApp:
             initialfile=initial_file,
             filetypes=[("Disk Image Files", "*.img"), ("All Files", "*.*")]
         )
-        
+
         if path:
             self.output_path.set(path)
             self.tk_log(f"Output path selected: {path}")
@@ -151,11 +151,11 @@ class BuilderApp:
         self.log_text.config(state='normal')
         self.log_text.delete('1.0', tk.END)
         self.log_text.config(state='disabled')
-        
+
         self.tk_log("=== BUILD STARTED ===")
         self.build_button.config(state='disabled')
         self.browse_button.config(state='disabled')
-        
+
         threading.Thread(target=self._build_process).start()
 
     def _build_process(self):
@@ -171,7 +171,7 @@ class BuilderApp:
             self.tk_log(f"ERROR: {NASM_EXECUTABLE} not found at {NASM_PATH}", is_error=True)
             self._cleanup_buttons()
             return
-        
+
         if not self.run_nasm([NASM_PATH, "-f", "bin", BOOTLOADER_ASM, "-o", BOOTLOADER_BIN], "Bootloader build failed"):
             self._cleanup_and_finish()
             return
@@ -204,12 +204,12 @@ class BuilderApp:
                 self.tk_log(f"Final image size: {os.path.getsize(out_path)} bytes.")
             else:
                 self.tk_log("No padding needed (Image size > Floppy size).")
-            
+
             self.tk_log("=== BUILD COMPLETE ===", is_success=True)
             self.tk_log(f"Successfully created: **{out_path}**", is_success=True)
-            
+
         self._cleanup_and_finish()
-    
+
     def _cleanup_buttons(self):
         self.build_button.config(state='normal')
         self.browse_button.config(state='normal')
@@ -237,8 +237,9 @@ if __name__ == "__main__":
         print("Please install it using: pip install pillow")
         sys.exit(1)
 
-    os.chdir(SCRIPT_DIR) 
+    os.chdir(SCRIPT_DIR)
 
     root = tk.Tk()
     app = BuilderApp(root)
+
     root.mainloop()
